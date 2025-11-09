@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - CB4UHost{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        padding: 4rem 2rem;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(121, 40, 202, 0.2), rgba(255, 0, 128, 0.2));
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 1rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .about-hero p {
+        font-size: 1.2rem;
+        color: var(--gray);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .about-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+
+    .about-section {
+        margin-bottom: 4rem;
+    }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+        margin-bottom: 4rem;
+    }
+
+    .about-text h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .about-text p {
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 1rem;
+    }
+
+    .about-image {
+        background: linear-gradient(135deg, rgba(121, 40, 202, 0.2), rgba(255, 0, 128, 0.2));
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .about-image i {
+        font-size: 8rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .stat-card {
+        background: rgba(30, 41, 59, 0.5);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .stat-label {
+        color: var(--gray);
+        margin-top: 0.5rem;
+    }
+
+    .values-section {
+        background: rgba(15, 23, 42, 0.5);
+        padding: 3rem;
+        border-radius: var(--border-radius);
+        margin: 3rem 0;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .value-card {
+        text-align: center;
+    }
+
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1rem;
+        box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+    }
+
+    .value-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .value-card p {
+        color: var(--gray);
+    }
+
+    .team-section {
+        margin: 4rem 0;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .team-card {
+        background: rgba(30, 41, 59, 0.5);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .team-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        margin: 0 auto 1rem;
+    }
+
+    .team-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .team-role {
+        color: var(--secondary);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .team-card p {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 2rem;
+        }
+
+        .about-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .about-image {
+            order: -1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero">
+    <h1>About CB4UHost</h1>
+    <p>We're on a mission to help businesses and individuals find the perfect hosting solution at the best price.</p>
+</section>
+
+<!-- Main Content -->
+<div class="about-content">
+    <!-- Our Story -->
+    <div class="about-grid">
+        <div class="about-text">
+            <h2>Our Story</h2>
+            <p>CB4UHost was founded in 2023 with a simple goal: make it easier for people to find and compare web hosting services. We recognized that choosing a hosting provider was often confusing and time-consuming, with countless options and pricing structures to navigate.</p>
+            <p>Our team of hosting experts and developers came together to create a platform that simplifies this process. We gather real-time pricing data from major hosting providers and present it in an easy-to-understand format, helping you make informed decisions.</p>
+            <p>Today, we're proud to help thousands of users find their perfect hosting solution every month, saving them time and money.</p>
+        </div>
+        <div class="about-image">
+            <i class="fas fa-rocket"></i>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Happy Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Hosting Plans</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">5</div>
+            <div class="stat-label">Cloud Providers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">70%</div>
+            <div class="stat-label">Average Savings</div>
+        </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="about-grid">
+        <div class="about-image">
+            <i class="fas fa-bullseye"></i>
+        </div>
+        <div class="about-text">
+            <h2>Our Mission</h2>
+            <p>Our mission is to empower individuals and businesses to make informed hosting decisions by providing transparent, unbiased, and comprehensive comparisons of hosting services.</p>
+            <p>We believe that everyone deserves access to quality hosting at fair prices, and we're committed to making that a reality through our platform.</p>
+            <p>We continuously update our database with the latest pricing information and features to ensure you always have access to the most current data.</p>
+        </div>
+    </div>
+
+    <!-- Values -->
+    <div class="values-section">
+        <h2 style="text-align: center; font-size: 2rem; font-family: 'Orbitron', sans-serif; margin-bottom: 1rem;">Our Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Transparency</h3>
+                <p>We provide honest, unbiased comparisons without hidden agendas or paid placements.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Quality</h3>
+                <p>We only compare reputable hosting providers with proven track records.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>User-Centric</h3>
+                <p>Every feature we build is designed with our users' needs in mind.</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <h3>Innovation</h3>
+                <p>We continuously improve our platform with the latest technology and features.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="team-section">
+        <h2 style="text-align: center; font-size: 2rem; font-family: 'Orbitron', sans-serif; margin-bottom: 1rem;">Meet Our Team</h2>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>John Doe</h3>
+                <div class="team-role">Founder & CEO</div>
+                <p>10+ years experience in cloud hosting and infrastructure management.</p>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Jane Smith</h3>
+                <div class="team-role">CTO</div>
+                <p>Expert in API integration and real-time data processing systems.</p>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Mike Johnson</h3>
+                <div class="team-role">Head of Product</div>
+                <p>Passionate about creating user-friendly experiences and interfaces.</p>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Sarah Williams</h3>
+                <div class="team-role">Customer Success</div>
+                <p>Dedicated to ensuring our users get the best hosting solutions.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
