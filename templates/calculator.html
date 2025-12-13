@@ -1,0 +1,1673 @@
+{% extends 'base.html' %}
+
+{% block title %}Hosting Calculator - CB4UHost{% endblock %}
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosting Plan Finder</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% block extra_css %}
+    <style>
+        /* Global Styles */
+        :root {
+            --primary: #7928CA;
+            --secondary: #FF0080;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gray: #64748B;
+            --success: #10B981;
+            --info: #06B6D4;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --border-radius: 12px;
+            --hostinger: #673DE6;
+            --bluehost: #3575D3;
+            --godaddy: #00A4A6;
+            --bigrock: #FF5C35;
+            --namecheap: #FF5126;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark), #1E293B);
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+        
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin-bottom: 2rem;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.2;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Error Message */
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid var(--danger);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Requirements Form */
+        .form-container {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 1;
+        }
+        
+        .form-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-title::before {
+            content: "⚡";
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        /* Form sections that can be hidden/shown */
+        .form-section {
+            transition: all 0.3s ease;
+        }
+
+        .form-section.hidden {
+            display: none;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(121, 40, 202, 0.3);
+        }
+        
+        .range-container {
+            position: relative;
+            padding-top: 0;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Manual input styling */
+        .range-inputs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .manual-input {
+            width: 80px;
+            padding: 6px 8px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: var(--light);
+            font-size: 0.9rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .manual-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(121, 40, 202, 0.3);
+        }
+
+        .manual-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .manual-input.enabled {
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(121, 40, 202, 0.3);
+        }
+
+        .range-value {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        /* Custom Plan Toggle Switch */
+        .custom-plan-toggle {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .toggle-container {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .toggle-slider {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-container input {
+            display: none;
+        }
+
+        .toggle-container input:checked + .toggle-slider {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .toggle-container input:checked + .toggle-slider::before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--light);
+        }
+
+        /* Hosting Type Selector */
+        .hosting-type-selector {
+            margin-bottom: 2rem;
+        }
+        .type-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+        .type-option {
+            cursor: pointer;
+        }
+
+        .type-option input[type="radio"] {
+            display: none;
+        }
+
+        .type-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .type-card i {
+            font-size: 2.5rem;
+            color: var(--info);
+            margin-bottom: 1rem;
+        }
+
+        .type-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+
+        .type-card p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .type-option input[type="radio"]:checked + .type-card {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: var(--info);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .type-option.active .type-card {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: var(--info);
+        }
+
+        .type-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .checkbox-container input[type="checkbox"]:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .checkbox-container input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .checkbox-container input[type="checkbox"]:checked::after {
+            content: "✓";
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            left: 4px;
+            top: -1px;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(255, 0, 128, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 0, 128, 0.4);
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-icon {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-container {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        /* Loading Button State */
+        .loading-btn.loading .btn-text {
+            visibility: hidden;
+        }
+        
+        .loading-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-container {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .results-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .results-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .results-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .best-plan {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .best-plan::before {
+            content: "Best Match";
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .best-plan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .best-plan-provider {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--success);
+            text-transform: capitalize;
+        }
+        
+        .best-plan-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .best-plan-price-container {
+            display: flex;
+            align-items: baseline;
+        }
+        
+        .best-plan-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-right: 1rem;
+        }
+        
+        .best-plan-original {
+            font-size: 1.2rem;
+            color: var(--gray);
+            text-decoration: line-through;
+        }
+        
+        .best-plan-savings {
+            font-size: 0.9rem;
+            color: var(--warning);
+            font-weight: 500;
+        }
+        
+        .best-plan-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .detail-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Buy Now Button Styles */
+        .buy-now-container {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .buy-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, var(--success), #06d6a0);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .card-buy-now {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .card-buy-btn {
+            display: inline-block;
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--info);
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .card-buy-btn:hover {
+            background: rgba(6, 182, 212, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card-buy-btn i {
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        .plan-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .plan-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .plan-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+        }
+        
+        .plan-card.hostinger::after {
+            background-color: var(--hostinger);
+        }
+        
+        .plan-card.bluehost::after {
+            background-color: var(--bluehost);
+        }
+        
+        .plan-card.godaddy::after {
+            background-color: var(--godaddy);
+        }
+        
+        .plan-card.bigrock::after {
+            background-color: var(--bigrock);
+        }
+        
+        .plan-card.namecheap::after {
+            background-color: var(--namecheap);
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(30, 41, 59, 0.7);
+        }
+        
+        .plan-provider {
+            font-size: 1rem;
+            text-transform: capitalize;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .provider-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .provider-logo span {
+            text-transform: capitalize;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+        
+        .provider-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .hostinger-icon {
+            background-color: var(--hostinger);
+        }
+        
+        .bluehost-icon {
+            background-color: var(--bluehost);
+        }
+        
+        .godaddy-icon {
+            background-color: var(--godaddy);
+        }
+        
+        .bigrock-icon {
+            background-color: var(--bigrock);
+        }
+        
+        .namecheap-icon {
+            background-color: var(--namecheap);
+        }
+        
+        .plan-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .plan-price-container {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 1.5rem;
+        }
+        
+        .plan-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--info);
+            margin-right: 0.75rem;
+        }
+        
+        .plan-original {
+            font-size: 1rem;
+            color: var(--gray);
+            text-decoration: line-through;
+        }
+        
+        .plan-features {
+            list-style: none;
+        }
+        
+        .plan-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-icon {
+            color: var(--info);
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .best-for {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--light);
+            opacity: 0.8;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 0.75rem;
+        }
+        
+        .best-for strong {
+            color: var(--success);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: var(--border-radius);
+        }
+        
+        .no-results h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--warning);
+        }
+        
+        .loader {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        /* VPS Badge */
+        .vps-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--info), #0891b2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .vps-card {
+            border-left: 4px solid var(--info);
+        }
+        /* Cloud Badge */
+.cloud-badge {
+    display: inline-block;
+    background: linear-gradient(45deg, #06B6D4, #0891b2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.cloud-card {
+    border-left: 4px solid #06B6D4;
+}
+
+/* Dedicated Badge */
+.dedicated-badge {
+    display: inline-block;
+    background: linear-gradient(45deg, #EF4444, #DC2626);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.dedicated-card {
+    border-left: 4px solid #EF4444;
+}
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .best-plan-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .best-plan-price-container {
+                margin-top: 1rem;
+            }
+
+            .type-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    {% endblock %}
+</head>
+{% block content %}
+    <!-- Your existing calculator HTML content here -->
+
+<body>
+    <header class="header">
+        <h1>Web Hosting Plan Finder</h1>
+        <p>Find the perfect hosting plan for your website by comparing top providers like Hostinger, Bluehost, GoDaddy, BigRock, and Namecheap.</p>
+    </header>
+
+    <div class="container">
+        <!-- Display errors if any -->
+        {% if error %}
+        <div class="error-message">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="form-container">
+            <h2 class="form-title">Tell us what you need</h2>
+            
+            <form id="hosting-form" method="POST" action="{{ url_for('calculator') }}">
+                <!-- Hosting Type Selector -->
+                <!-- Hosting Type Selector -->
+<div class="hosting-type-selector">
+    <div class="type-options">
+        <label class="type-option {% if form_data.hosting_type == 'shared' or not form_data.hosting_type %}active{% endif %}">
+            <input type="radio" name="hosting_type" value="shared" {% if form_data.hosting_type == 'shared' or not form_data.hosting_type %}checked{% endif %}>
+            <div class="type-card">
+                <i class="fas fa-server"></i>
+                <h3>Shared Hosting</h3>
+                <p>Perfect for websites and blogs</p>
+            </div>
+        </label>
+        
+        <label class="type-option {% if form_data.hosting_type == 'vps' %}active{% endif %}">
+            <input type="radio" name="hosting_type" value="vps" {% if form_data.hosting_type == 'vps' %}checked{% endif %}>
+            <div class="type-card">
+                <i class="fas fa-hdd"></i>
+                <h3>VPS Hosting</h3>
+                <p>More power and control</p>
+            </div>
+        </label>
+
+        <label class="type-option {% if form_data.hosting_type == 'cloud' %}active{% endif %}">
+            <input type="radio" name="hosting_type" value="cloud" {% if form_data.hosting_type == 'cloud' %}checked{% endif %}>
+            <div class="type-card">
+                <i class="fas fa-cloud"></i>
+                <h3>Cloud Hosting</h3>
+                <p>Scalable and reliable</p>
+            </div>
+        </label>
+
+        <label class="type-option {% if form_data.hosting_type == 'dedicated' %}active{% endif %}">
+            <input type="radio" name="hosting_type" value="dedicated" {% if form_data.hosting_type == 'dedicated' %}checked{% endif %}>
+            <div class="type-card">
+                <i class="fas fa-database"></i>
+                <h3>Dedicated Server</h3>
+                <p>Maximum resources</p>
+            </div>
+        </label>
+    </div>
+</div>
+
+                <div class="custom-plan-toggle">
+                    <label class="toggle-container">
+                        <input type="checkbox" name="custom_plan" id="custom_plan" {% if form_data.custom_plan %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Enable Custom Plan Options</span>
+                    </label>
+                </div>
+
+                <div class="form-grid">
+                    <!-- Shared Hosting Specific Fields -->
+                    <div class="form-group form-section" id="websites-field">
+                        <label for="websites" class="form-label">
+                            <i class="fas fa-globe"></i> How many websites?
+                        </label>
+                        <div class="range-container">
+                            <input type="range" id="websites" name="websites" min="1" max="20" value="{{ form_data.websites }}" class="form-control">
+                            <div class="range-inputs">
+                                <span class="range-value" id="websitesValue">{{ form_data.websites }}</span>
+                                <input type="number" id="websitesInput" class="manual-input" min="1" max="100" value="{{ form_data.websites }}" {% if not form_data.custom_plan %}disabled{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VPS Specific Fields -->
+                    <div class="form-group form-section hidden" id="cpu-field">
+                        <label for="cpu_cores" class="form-label">
+                            <i class="fas fa-microchip"></i> CPU Cores
+                        </label>
+                        <div class="range-container">
+                            <input type="range" id="cpu_cores" name="cpu_cores" min="1" max="32" value="{{ form_data.cpu_cores|default(2) }}" class="form-control">
+                            <div class="range-inputs">
+                                <span class="range-value" id="cpuValue">{{ form_data.cpu_cores|default(2) }}</span>
+                                <input type="number" id="cpuInput" class="manual-input" min="1" max="64" value="{{ form_data.cpu_cores|default(2) }}" {% if not form_data.custom_plan %}disabled{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-section hidden" id="ram-field">
+                        <label for="ram" class="form-label">
+                            <i class="fas fa-memory"></i> RAM (GB)
+                        </label>
+                        <div class="range-container">
+                            <input type="range" id="ram" name="ram" min="1" max="64" value="{{ form_data.ram|default(4) }}" class="form-control">
+                            <div class="range-inputs">
+                                <span class="range-value" id="ramValue">{{ form_data.ram|default(4) }} GB</span>
+                                <input type="number" id="ramInput" class="manual-input" min="1" max="128" value="{{ form_data.ram|default(4) }}" {% if not form_data.custom_plan %}disabled{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Common Fields -->
+                    <div class="form-group form-section" id="storage-field">
+                        <label for="storage" class="form-label">
+                            <i class="fas fa-hdd"></i> <span id="storage-label-text">Minimum storage needed (GB)</span>
+                        </label>
+                        <div class="range-container">
+                            <input type="range" id="storage" name="storage" min="1" max="500" value="{{ form_data.storage }}" class="form-control">
+                            <div class="range-inputs">
+                                <span class="range-value" id="storageValue">{{ form_data.storage }} GB</span>
+                                <input type="number" id="storageInput" class="manual-input" min="1" max="1000" value="{{ form_data.storage }}" {% if not form_data.custom_plan %}disabled{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group form-section" id="budget-field">
+                        <label for="budget" class="form-label">
+                            <i class="fas fa-dollar-sign"></i> Monthly budget (₹)
+                        </label>
+                        <div class="range-container">
+                            <input type="range" id="budget" name="budget" min="50" max="10000" value="{{ form_data.budget }}" step="50" class="form-control">
+                            <div class="range-inputs">
+                                <span class="range-value" id="budgetValue">₹{{ form_data.budget }}</span>
+                                <input type="number" id="budgetInput" class="manual-input" min="50" max="20000" step="50" value="{{ form_data.budget }}" {% if not form_data.custom_plan %}disabled{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shared Hosting Additional Features -->
+                    <div class="form-group form-section" id="features-field">
+                        <label class="form-label">
+                            <i class="fas fa-star"></i> Additional features
+                        </label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="email" {% if form_data.email %}checked{% endif %}>
+                                Email accounts
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="domain" {% if form_data.domain %}checked{% endif %}>
+                                Free domain
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="ssl" {% if form_data.ssl %}checked{% endif %}>
+                                SSL certificate
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-container">
+                    <button type="submit" class="btn loading-btn" id="compareBtn">
+                        <span class="btn-icon">🔍</span>
+                        <span class="btn-text">Find Best Hosting Plans</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="loader" id="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing hosting plans...</p>
+        </div>
+
+        <div class="results-container" id="results" style="display: {% if show_results %}block{% else %}none{% endif %};">
+            <div class="results-header">
+                <h2 class="results-title">Your Hosting Recommendations</h2>
+                <p>Based on your requirements, here are the best hosting plans we've found for you.</p>
+            </div>
+            
+            {% if results and results.count > 0 %}
+                {% if results.hosting_type == 'vps' %}
+                    <!-- VPS Results -->
+                    {% if results.best_plan %}
+                        {% set bestPlan = results.best_plan %}
+                        {% set plan = bestPlan.plan %}
+                        {% set savings = ((plan.regular_price - plan.price) / plan.regular_price * 100)|round|int %}
+                        
+                        <div class="best-plan">
+                            <div class="best-plan-header">
+                                <div>
+                                    <div class="best-plan-provider">{{ bestPlan.provider }} <span class="vps-badge">VPS</span></div>
+                                    <div class="best-plan-name">{{ bestPlan.plan_name }}</div>
+                                    <div class="best-for">
+                                        <strong>Perfect for:</strong> {{ plan.best_for }}
+                                    </div>
+                                </div>
+                                <div class="best-plan-price-container">
+                                    <span class="best-plan-price">₹{{ plan.price }}/mo</span>
+                                    <div>
+                                        <div class="best-plan-original">₹{{ plan.regular_price }}/mo</div>
+                                        {% if savings > 0 %}
+                                        <div class="best-plan-savings">Save {{ savings }}%</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="best-plan-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.cpu_cores }} vCPU Core{{ 's' if plan.cpu_cores != 1 else '' }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.ram }} GB RAM</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.storage }} {{ plan.type }} Storage</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.bandwidth }} Bandwidth</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">{{ '✓' if 'SSL' in plan.ssl else '×' }}</div>
+                                    <div>{{ plan.ssl }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.backup }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="buy-now-container">
+                                <a href="{{ plan.buy_link }}" target="_blank" class="buy-btn">
+                                    <span class="btn-icon"><i class="fas fa-shopping-cart"></i></span>
+                                    Buy Now
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <h3>All Matching VPS Plans</h3>
+                    <div class="plan-cards">
+                        {% for plan_data in results.all_plans %}
+                            {% set plan = plan_data.plan %}
+                            {% set savings = ((plan.regular_price - plan.price) / plan.regular_price * 100)|round|int %}
+                            
+                            <div class="plan-card {{ plan_data.provider }} vps-card">
+                                <div class="plan-provider">
+                                    <div class="provider-logo">
+                                        <div class="provider-icon {{ plan_data.provider }}-icon">{{ plan_data.provider[0]|upper }}</div>
+                                        <span>{{ plan_data.provider }}</span>
+                                    </div>
+                                    <span class="vps-badge">VPS</span>
+                                </div>
+                                <h3 class="plan-name">{{ plan_data.plan_name }}</h3>
+                                <div class="plan-price-container">
+                                    <span class="plan-price">₹{{ plan.price }}/mo</span>
+                                    <span class="plan-original">₹{{ plan.regular_price }}</span>
+                                </div>
+                                <ul class="plan-features">
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.cpu_cores }} vCPU Core{{ 's' if plan.cpu_cores != 1 else '' }}</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.ram }} GB RAM</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.storage }} {{ plan.type }}</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.bandwidth }} Bandwidth</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">{{ '✓' if 'SSL' in plan.ssl else '×' }}</span>
+                                        <span>{{ plan.ssl }}</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">✓</span>
+                                        <span>{{ plan.backup }}</span>
+                                    </li>
+                                </ul>
+                                <div class="best-for">
+                                    <strong>Best for:</strong> {{ plan.best_for }}
+                                </div>
+                                <div class="card-buy-now">
+                                    <a href="{{ plan.buy_link }}" target="_blank" class="card-buy-btn">
+                                        Buy Now <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Shared Hosting Results -->
+                    {% if results.best_plan %}
+                        {% set bestPlan = results.best_plan %}
+                        {% set plan = bestPlan.plan %}
+                        {% set savings = ((plan.regular_price - plan.price) / plan.regular_price * 100)|round|int %}
+                        
+                        <div class="best-plan">
+                            <div class="best-plan-header">
+                                <div>
+                                    <div class="best-plan-provider">{{ bestPlan.provider }}</div>
+                                    <div class="best-plan-name">{{ bestPlan.plan_name }}</div>
+                                    <div class="best-for">
+                                        <strong>Perfect for:</strong> {{ plan.best_for }}
+                                    </div>
+                                </div>
+                                <div class="best-plan-price-container">
+                                    <span class="best-plan-price">₹{{ plan.price }}/mo</span>
+                                    <div>
+                                        <div class="best-plan-original">₹{{ plan.regular_price }}/mo</div>
+                                        <div class="best-plan-savings">Save {{ savings }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="best-plan-details">
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.websites if plan.websites is string else plan.websites }} Website{{ 's' if plan.websites != 1 else '' }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.storage }} {{ plan.type }} Storage</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.bandwidth }} Bandwidth</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">✓</div>
+                                    <div>{{ plan.email }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">{{ '✓' if plan.free_domain else '×' }}</div>
+                                    <div>{{ 'Free Domain' if plan.free_domain else 'No Free Domain' }}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon">{{ '✓' if 'SSL' in plan.ssl else '×' }}</div>
+                                    <div>{{ plan.ssl }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="buy-now-container">
+                                <a href="{{ plan.buy_link }}" target="_blank" class="buy-btn">
+                                    <span class="btn-icon"><i class="fas fa-shopping-cart"></i></span>
+                                    Buy Now
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <h3>All Matching Plans</h3>
+                    <div class="plan-cards">
+                        {% for plan_data in results.all_plans %}
+                            {% set plan = plan_data.plan %}
+                            {% set savings = ((plan.regular_price - plan.price) / plan.regular_price * 100)|round|int %}
+                            
+                            <div class="plan-card {{ plan_data.provider }}">
+                                <div class="plan-provider">
+                                    <div class="provider-logo">
+                                        <div class="provider-icon {{ plan_data.provider }}-icon">{{ plan_data.provider[0]|upper }}</div>
+                                        <span>{{ plan_data.provider }}</span>
+                                    </div>
+                                </div>
+                                <h3 class="plan-name">{{ plan_data.plan_name }}</h3>
+                                <div class="plan-price-container">
+                                    <span class="plan-price">₹{{ plan.price }}/mo</span>
+                                    <span class="plan-original">₹{{ plan.regular_price }}</span>
+                                </div>
+                                <ul class="plan-features">
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.websites if plan.websites is string else plan.websites }} Website{{ 's' if plan.websites != 1 else '' }}</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.storage }} {{ plan.type }} Storage</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.bandwidth }} Bandwidth</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">•</span>
+                                        <span>{{ plan.email }}</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">{{ '✓' if plan.free_domain else '×' }}</span>
+                                        <span>{{ 'Free Domain' if plan.free_domain else 'No Free Domain' }}</span>
+                                    </li>
+                                    <li class="plan-feature">
+                                        <span class="feature-icon">{{ '✓' if 'SSL' in plan.ssl else '×' }}</span>
+                                        <span>{{ plan.ssl }}</span>
+                                    </li>
+                                </ul>
+                                <div class="best-for">
+                                    <strong>Best for:</strong> {{ plan.best_for }}
+                                </div>
+                                <div class="card-buy-now">
+                                    <a href="{{ plan.buy_link }}" target="_blank" class="card-buy-btn">
+                                        Buy Now <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+        </div>
+            {% else %}
+            
+            
+                <div class="no-results">
+                    <h3>No Matching Plans Found</h3>
+                    <p>Try adjusting your requirements to see more options.</p>
+                </div>
+            {% endif %}
+        </div>
+<script>
+    // Update range value display
+    function updateRangeValue(input, outputId, prefix = '', suffix = '', inputFieldId = null) {
+        const value = input.value;
+        let displayValue = prefix + value + suffix;
+        
+        document.getElementById(outputId).textContent = displayValue;
+        
+        // Also update the linked input field if it exists
+        if (inputFieldId) {
+            const inputField = document.getElementById(inputFieldId);
+            if (inputField) {
+                inputField.value = value;
+            }
+        }
+    }
+    
+    // Update slider from manual input
+    function updateSliderFromInput(input, sliderId) {
+        const value = input.value;
+        const slider = document.getElementById(sliderId);
+        
+        if (!slider) return;
+        
+        // Make sure value is within slider's min and max
+        const min = parseInt(slider.min);
+        const max = parseInt(slider.max);
+        
+        // Validate input
+        if (value < min) {
+            input.value = min;
+            slider.value = min;
+        } else if (value > max) {
+            input.value = max;
+            slider.value = max;
+        } else {
+            slider.value = value;
+        }
+        
+        // Trigger the slider's input event to update the display
+        slider.dispatchEvent(new Event('input'));
+    }
+    
+    // Toggle custom plan inputs
+    function toggleCustomPlanInputs() {
+        const customPlanCheckbox = document.getElementById('custom_plan');
+        if (!customPlanCheckbox) return;
+        
+        const isEnabled = customPlanCheckbox.checked;
+        
+        // Get all manual input fields
+        const manualInputs = document.querySelectorAll('.manual-input');
+        
+        // Enable or disable them based on checkbox state
+        manualInputs.forEach(input => {
+            input.disabled = !isEnabled;
+            
+            if (isEnabled) {
+                input.classList.add('enabled');
+            } else {
+                input.classList.remove('enabled');
+            }
+        });
+    }
+
+    // Toggle fields based on hosting type
+    function toggleHostingFields(hostingType) {
+        const websitesField = document.getElementById('websites-field');
+        const cpuField = document.getElementById('cpu-field');
+        const ramField = document.getElementById('ram-field');
+        const featuresField = document.getElementById('features-field');
+        const storageLabelText = document.getElementById('storage-label-text');
+        const budgetSlider = document.getElementById('budget');
+        const budgetValue = document.getElementById('budgetValue');
+        const budgetInput = document.getElementById('budgetInput');
+        
+ 
+        if (hostingType === 'vps') {
+            // Show VPS fields
+            if (cpuField) cpuField.classList.remove('hidden');
+            if (ramField) ramField.classList.remove('hidden');
+            
+            // Hide Shared Hosting fields
+            if (websitesField) websitesField.classList.add('hidden');
+            if (featuresField) featuresField.classList.add('hidden');
+            
+            // Update storage label
+            if (storageLabelText) storageLabelText.textContent = 'Storage needed (GB)';
+            
+            // Update budget range for VPS
+            if (budgetSlider) {
+                budgetSlider.min = 500;
+                budgetSlider.max = 10000;
+                budgetSlider.step = 100;
+                budgetSlider.value = 500;
+                budgetValue.textContent = '₹500';
+                if (budgetInput) budgetInput.value = 500;
+            }
+        } else if (hostingType === 'cloud') {
+            // Show Cloud fields (CPU, RAM, and Websites)
+            if (cpuField) cpuField.classList.remove('hidden');
+            if (ramField) ramField.classList.remove('hidden');
+            if (websitesField) websitesField.classList.remove('hidden');
+            
+            // Show features for cloud
+            if (featuresField) featuresField.classList.remove('hidden');
+            
+            // Update storage label
+            if (storageLabelText) storageLabelText.textContent = 'Storage needed (GB)';
+            
+            // Update budget range for Cloud
+            if (budgetSlider) {
+                budgetSlider.min = 200;
+                budgetSlider.max = 20000;
+                budgetSlider.step = 100;
+                budgetSlider.value = 200;
+                budgetValue.textContent = '₹200';
+                if (budgetInput) budgetInput.value = 200;
+            }
+        } else if (hostingType === 'dedicated') {
+            // Show Dedicated fields (CPU and RAM only)
+            if (cpuField) cpuField.classList.remove('hidden');
+            if (ramField) ramField.classList.remove('hidden');
+            
+            // Hide websites and features
+            if (websitesField) websitesField.classList.add('hidden');
+            if (featuresField) featuresField.classList.add('hidden');
+            
+            // Update storage label
+            if (storageLabelText) storageLabelText.textContent = 'Storage needed (GB)';
+            
+            // Update budget range for Dedicated
+            if (budgetSlider) {
+                budgetSlider.min = 7000;
+                budgetSlider.max = 50000;
+                budgetSlider.step = 500;
+                budgetSlider.value = 7000;
+                budgetValue.textContent = '₹7000';
+                if (budgetInput) budgetInput.value = 7000;
+            }
+        } else {
+            // Show Shared Hosting fields
+            if (websitesField) websitesField.classList.remove('hidden');
+            if (featuresField) featuresField.classList.remove('hidden');
+            
+            // Hide VPS/Cloud/Dedicated fields
+            if (cpuField) cpuField.classList.add('hidden');
+            if (ramField) ramField.classList.add('hidden');
+            
+            // Update storage label
+            if (storageLabelText) storageLabelText.textContent = 'Minimum storage needed (GB)';
+            
+            // Update budget range for Shared
+            if (budgetSlider) {
+                budgetSlider.min = 50;
+                budgetSlider.max = 2000;
+                budgetSlider.step = 50;
+                budgetSlider.value = 50;
+                budgetValue.textContent = '₹50';
+                if (budgetInput) budgetInput.value = 50;
+            }
+        }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check initial hosting type
+        const initialHostingType = document.querySelector('input[name="hosting_type"]:checked');
+        if (initialHostingType) {
+            toggleHostingFields(initialHostingType.value);
+        }
+
+        // Initialize range sliders for Shared Hosting
+        const websitesSlider = document.getElementById('websites');
+        if (websitesSlider) {
+            websitesSlider.addEventListener('input', function() {
+                updateRangeValue(this, 'websitesValue', '', '', 'websitesInput');
+            });
+            updateRangeValue(websitesSlider, 'websitesValue', '', '', 'websitesInput');
+        }
+        
+        // Initialize range sliders for VPS
+        const cpuSlider = document.getElementById('cpu_cores');
+        if (cpuSlider) {
+            cpuSlider.addEventListener('input', function() {
+                updateRangeValue(this, 'cpuValue', '', '', 'cpuInput');
+            });
+            updateRangeValue(cpuSlider, 'cpuValue', '', '', 'cpuInput');
+        }
+
+        const ramSlider = document.getElementById('ram');
+        if (ramSlider) {
+            ramSlider.addEventListener('input', function() {
+                updateRangeValue(this, 'ramValue', '', ' GB', 'ramInput');
+            });
+            updateRangeValue(ramSlider, 'ramValue', '', ' GB', 'ramInput');
+        }
+
+        // Common sliders
+        const storageSlider = document.getElementById('storage');
+        if (storageSlider) {
+            storageSlider.addEventListener('input', function() {
+                updateRangeValue(this, 'storageValue', '', ' GB', 'storageInput');
+            });
+            updateRangeValue(storageSlider, 'storageValue', '', ' GB', 'storageInput');
+        }
+        
+        const budgetSlider = document.getElementById('budget');
+        if (budgetSlider) {
+            budgetSlider.addEventListener('input', function() {
+                updateRangeValue(this, 'budgetValue', '₹', '', 'budgetInput');
+            });
+            updateRangeValue(budgetSlider, 'budgetValue', '₹', '', 'budgetInput');
+        }
+        
+        // Add event listeners for manual inputs
+        const websitesInput = document.getElementById('websitesInput');
+        if (websitesInput) {
+            websitesInput.addEventListener('change', function() {
+                updateSliderFromInput(this, 'websites');
+            });
+        }
+
+        const cpuInput = document.getElementById('cpuInput');
+        if (cpuInput) {
+            cpuInput.addEventListener('change', function() {
+                updateSliderFromInput(this, 'cpu_cores');
+            });
+        }
+
+        const ramInput = document.getElementById('ramInput');
+        if (ramInput) {
+            ramInput.addEventListener('change', function() {
+                updateSliderFromInput(this, 'ram');
+            });
+        }
+        
+        const storageInput = document.getElementById('storageInput');
+        if (storageInput) {
+            storageInput.addEventListener('change', function() {
+                updateSliderFromInput(this, 'storage');
+            });
+        }
+        
+        const budgetInput = document.getElementById('budgetInput');
+        if (budgetInput) {
+            budgetInput.addEventListener('change', function() {
+                updateSliderFromInput(this, 'budget');
+            });
+        }
+        
+        // Add event listener to custom plan toggle
+        const customPlanToggle = document.getElementById('custom_plan');
+        if (customPlanToggle) {
+            customPlanToggle.addEventListener('change', toggleCustomPlanInputs);
+            // Initialize the toggle state on page load
+            toggleCustomPlanInputs();
+        }
+        
+        // Handle hosting type radio buttons
+        const hostingTypeRadios = document.querySelectorAll('input[name="hosting_type"]');
+        hostingTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Update active class on type options
+                document.querySelectorAll('.type-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                
+                if (this.checked) {
+                    this.closest('.type-option').classList.add('active');
+                    toggleHostingFields(this.value);
+                }
+            });
+        });
+        
+        // Form submission - sync manual inputs with sliders
+        const form = document.getElementById('hosting-form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const customPlanEnabled = document.getElementById('custom_plan').checked;
+                
+                if (customPlanEnabled) {
+                    // Sync the manual input values to the sliders before submission
+                    const inputPairs = [
+                        ['websitesInput', 'websites'],
+                        ['cpuInput', 'cpu_cores'],
+                        ['ramInput', 'ram'],
+                        ['storageInput', 'storage'],
+                        ['budgetInput', 'budget']
+                    ];
+                    
+                    inputPairs.forEach(([inputId, sliderId]) => {
+                        const input = document.getElementById(inputId);
+                        const slider = document.getElementById(sliderId);
+                        if (input && slider && !input.disabled) {
+                            slider.value = input.value;
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>
+</body>
+{% endblock %}
+</html>

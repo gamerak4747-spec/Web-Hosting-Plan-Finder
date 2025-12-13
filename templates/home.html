@@ -1,0 +1,418 @@
+{% extends 'base.html' %}
+
+{% block title %}CB4UHost - Find Your Perfect Hosting Solution{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .hero {
+        padding: 5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 30% 50%, rgba(121, 40, 202, 0.2), transparent 50%),
+                    radial-gradient(circle at 70% 50%, rgba(255, 0, 128, 0.2), transparent 50%);
+        z-index: -1;
+    }
+
+    .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 3.5rem;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .hero p {
+        font-size: 1.3rem;
+        color: var(--gray);
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 0, 128, 0.4);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--light);
+        padding: 1rem 2.5rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--secondary);
+        background: rgba(255, 0, 128, 0.1);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Features Section */
+    .features {
+        padding: 5rem 2rem;
+        background: rgba(15, 23, 42, 0.5);
+    }
+
+    .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 3rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background: rgba(30, 41, 59, 0.5);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border-color: var(--secondary);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: var(--gray);
+    }
+
+    /* How It Works */
+    .how-it-works {
+        padding: 5rem 2rem;
+    }
+
+    .how-it-works-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .step-card {
+        text-align: center;
+        position: relative;
+    }
+
+    .step-number {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 auto 1rem;
+        box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+    }
+
+    .step-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .step-card p {
+        color: var(--gray);
+    }
+
+    /* Providers Section */
+    .providers {
+        padding: 5rem 2rem;
+        background: rgba(15, 23, 42, 0.5);
+    }
+
+    .providers-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .providers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .provider-logo {
+        background: rgba(30, 41, 59, 0.5);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 120px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .provider-logo:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .provider-logo h3 {
+        font-size: 1.5rem;
+        color: var(--light);
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 5rem 2rem;
+        text-align: center;
+    }
+
+    .cta-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, rgba(121, 40, 202, 0.2), rgba(255, 0, 128, 0.2));
+        padding: 3rem;
+        border-radius: var(--border-radius);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cta-container h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .cta-container p {
+        font-size: 1.2rem;
+        color: var(--gray);
+        margin-bottom: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <h1>Find Your Perfect Hosting Solution</h1>
+        <p>Compare prices from top hosting providers including Hostinger, Bluehost, GoDaddy, BigRock, and Namecheap. Make informed decisions and save money.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('calculator') }}" class="btn-primary">
+                <i class="fas fa-search"></i> Compare Plans Now
+            </a>
+            <a href="{{ url_for('about') }}" class="btn-secondary">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="features-container">
+        <h2 class="section-title">Why Choose CB4UHost?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Real-Time Pricing</h3>
+                <p>Get up-to-date pricing information from all major hosting providers in one place.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <h3>Custom Comparisons</h3>
+                <p>Filter and compare plans based on your specific requirements and budget.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Unbiased Reviews</h3>
+                <p>Get honest, transparent comparisons without hidden biases or commissions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Instant Results</h3>
+                <p>Compare hundreds of hosting plans in seconds and find the best deal.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>Expert Support</h3>
+                <p>Get help from our hosting experts to make the right choice for your needs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>Save Money</h3>
+                <p>Find the best deals and save up to 70% on your hosting costs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+    <div class="how-it-works-container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Select Your Requirements</h3>
+                <p>Choose the hosting type and specify your server requirements like CPU, RAM, and storage.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Compare Prices</h3>
+                <p>Our system instantly compares prices from all major hosting providers.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>View Recommendations</h3>
+                <p>Get personalized recommendations based on your needs and budget.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3>Choose & Save</h3>
+                <p>Select the best plan and start saving on your hosting costs immediately.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Providers Section -->
+<section class="providers">
+    <div class="providers-container">
+        <h2 class="section-title">Trusted Hosting Providers</h2>
+        <p style="color: var(--gray); font-size: 1.1rem; margin-bottom: 2rem;">We compare plans from the world's leading hosting companies</p>
+        <div class="providers-grid">
+            <div class="provider-logo">
+                <h3>Hostinger</h3>
+            </div>
+            <div class="provider-logo">
+                <h3>Bluehost</h3>
+            </div>
+            <div class="provider-logo">
+                <h3>GoDaddy</h3>
+            </div>
+            <div class="provider-logo">
+                <h3>BigRock</h3>
+            </div>
+            <div class="provider-logo">
+                <h3>Namecheap</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
