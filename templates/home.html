@@ -4,14 +4,16 @@
 
 {% block extra_css %}
 <style>
-    /* Hero Section */
+    /* Hero Section with PC Image Background */
     .hero {
-        padding: 5rem 2rem;
+        padding: 8rem 2rem 6rem;
         text-align: center;
         position: relative;
         overflow: hidden;
+        min-height: 600px;
     }
 
+    /* PC Image Background */
     .hero::before {
         content: '';
         position: absolute;
@@ -19,74 +21,130 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at 30% 50%, rgba(121, 40, 202, 0.2), transparent 50%),
-                    radial-gradient(circle at 70% 50%, rgba(255, 0, 128, 0.2), transparent 50%);
-        z-index: -1;
+        background: url('{{ url_for("static", filename="images/pc-bg.jpg") }}') center/cover no-repeat;
+        opacity: 0.15;
+        z-index: 0;
+        filter: blur(2px) brightness(0.8);
+    }
+
+    /* Animated Glow Overlay */
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 30% 50%, rgba(0, 217, 255, 0.3), transparent 40%),
+            radial-gradient(circle at 70% 50%, rgba(0, 255, 255, 0.2), transparent 40%);
+        z-index: 1;
+        animation: glowPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.8; }
     }
 
     .hero-container {
         max-width: 1200px;
         margin: 0 auto;
+        position: relative;
+        z-index: 2;
     }
 
     .hero h1 {
-        font-size: 3.5rem;
+        font-size: 4rem;
         font-family: 'Orbitron', sans-serif;
         margin-bottom: 1.5rem;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        background: linear-gradient(135deg, var(--primary), var(--accent), var(--primary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        animation: fadeInUp 0.8s ease;
+        animation: fadeInUp 0.8s ease, textGlow 3s ease-in-out infinite;
+        text-shadow: 0 0 30px var(--glow-cyan);
+    }
+
+    @keyframes textGlow {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.3); }
     }
 
     .hero p {
-        font-size: 1.3rem;
-        color: var(--gray);
-        margin-bottom: 2rem;
+        font-size: 1.4rem;
+        color: var(--light);
+        margin-bottom: 3rem;
         animation: fadeInUp 0.8s ease 0.2s both;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .hero-buttons {
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         justify-content: center;
         flex-wrap: wrap;
         animation: fadeInUp 0.8s ease 0.4s both;
     }
 
     .btn-primary {
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         color: white;
-        padding: 1rem 2.5rem;
+        padding: 1.2rem 3rem;
         border-radius: 30px;
         text-decoration: none;
         font-weight: 600;
         font-size: 1.1rem;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+        box-shadow: 0 4px 20px var(--glow-blue);
+        border: 1px solid var(--primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(255, 0, 128, 0.4);
+        box-shadow: 0 8px 30px var(--glow-cyan);
     }
 
     .btn-secondary {
-        background: transparent;
+        background: rgba(0, 217, 255, 0.1);
         color: var(--light);
-        padding: 1rem 2.5rem;
+        padding: 1.2rem 3rem;
         border-radius: 30px;
         text-decoration: none;
         font-weight: 600;
         font-size: 1.1rem;
-        border: 2px solid rgba(255, 255, 255, 0.2);
+        border: 2px solid var(--primary);
         transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
     }
 
     .btn-secondary:hover {
-        border-color: var(--secondary);
-        background: rgba(255, 0, 128, 0.1);
+        background: rgba(0, 217, 255, 0.2);
+        box-shadow: 0 4px 20px var(--glow-blue);
+        transform: translateY(-3px);
     }
 
     @keyframes fadeInUp {
@@ -102,8 +160,9 @@
 
     /* Features Section */
     .features {
-        padding: 5rem 2rem;
-        background: rgba(15, 23, 42, 0.5);
+        padding: 6rem 2rem;
+        background: rgba(10, 14, 39, 0.5);
+        position: relative;
     }
 
     .features-container {
@@ -113,53 +172,81 @@
 
     .section-title {
         text-align: center;
-        font-size: 2.5rem;
+        font-size: 3rem;
         font-family: 'Orbitron', sans-serif;
         margin-bottom: 3rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 30px var(--glow-blue);
     }
 
     .features-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         gap: 2rem;
     }
 
     .feature-card {
-        background: rgba(30, 41, 59, 0.5);
-        padding: 2rem;
+        background: rgba(0, 217, 255, 0.05);
+        padding: 2.5rem;
         border-radius: var(--border-radius);
         text-align: center;
         transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 217, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .feature-card:hover::before {
+        opacity: 1;
     }
 
     .feature-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        border-color: var(--secondary);
+        box-shadow: 0 15px 40px var(--glow-blue);
+        border-color: var(--primary);
+        background: rgba(0, 217, 255, 0.1);
     }
 
     .feature-icon {
-        font-size: 3rem;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        font-size: 3.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 0 10px var(--glow-blue));
     }
 
     .feature-card h3 {
         font-size: 1.5rem;
         margin-bottom: 1rem;
+        color: var(--light);
     }
 
     .feature-card p {
         color: var(--gray);
+        line-height: 1.8;
     }
 
     /* How It Works */
     .how-it-works {
-        padding: 5rem 2rem;
+        padding: 6rem 2rem;
+        position: relative;
     }
 
     .how-it-works-container {
@@ -170,7 +257,7 @@
     .steps-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
+        gap: 3rem;
         margin-top: 3rem;
     }
 
@@ -180,33 +267,54 @@
     }
 
     .step-number {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 2rem;
         font-weight: 700;
-        margin: 0 auto 1rem;
-        box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 4px 20px var(--glow-blue);
+        border: 2px solid var(--primary);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .step-card:nth-child(2) .step-number {
+        animation-delay: 0.5s;
+    }
+
+    .step-card:nth-child(3) .step-number {
+        animation-delay: 1s;
+    }
+
+    .step-card:nth-child(4) .step-number {
+        animation-delay: 1.5s;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
 
     .step-card h3 {
-        font-size: 1.3rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+        margin-bottom: 0.8rem;
+        color: var(--light);
     }
 
     .step-card p {
         color: var(--gray);
+        line-height: 1.8;
     }
 
     /* Providers Section */
     .providers {
-        padding: 5rem 2rem;
-        background: rgba(15, 23, 42, 0.5);
+        padding: 6rem 2rem;
+        background: rgba(10, 14, 39, 0.5);
     }
 
     .providers-container {
@@ -217,58 +325,34 @@
 
     .providers-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 2rem;
         margin-top: 3rem;
     }
 
     .provider-logo {
-        background: rgba(30, 41, 59, 0.5);
-        padding: 2rem;
+        background: rgba(0, 217, 255, 0.05);
+        padding: 2.5rem;
         border-radius: var(--border-radius);
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 120px;
+        height: 140px;
         transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(0, 217, 255, 0.2);
     }
 
     .provider-logo:hover {
         transform: scale(1.05);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 30px var(--glow-blue);
+        border-color: var(--primary);
+        background: rgba(0, 217, 255, 0.1);
     }
 
     .provider-logo h3 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         color: var(--light);
-    }
-
-    /* CTA Section */
-    .cta-section {
-        padding: 5rem 2rem;
-        text-align: center;
-    }
-
-    .cta-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: linear-gradient(135deg, rgba(121, 40, 202, 0.2), rgba(255, 0, 128, 0.2));
-        padding: 3rem;
-        border-radius: var(--border-radius);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .cta-container h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        font-family: 'Orbitron', sans-serif;
-    }
-
-    .cta-container p {
-        font-size: 1.2rem;
-        color: var(--gray);
-        margin-bottom: 2rem;
+        text-shadow: 0 0 10px var(--glow-blue);
     }
 
     /* Responsive */
@@ -289,6 +373,10 @@
         .section-title {
             font-size: 2rem;
         }
+
+        .feature-card, .step-card {
+            padding: 2rem;
+        }
     }
 </style>
 {% endblock %}
@@ -298,7 +386,7 @@
 <section class="hero">
     <div class="hero-container">
         <h1>Find Your Perfect Hosting Solution</h1>
-        <p>Compare prices from top hosting providers including Hostinger, Bluehost, GoDaddy, BigRock, and Namecheap. Make informed decisions and save money.</p>
+        <p>Compare prices from top hosting providers including Hostinger, Bluehost, GoDaddy, BigRock, and Namecheap. Powered by cutting-edge technology for the best hosting experience.</p>
         <div class="hero-buttons">
             <a href="{{ url_for('calculator') }}" class="btn-primary">
                 <i class="fas fa-search"></i> Compare Plans Now
@@ -320,42 +408,42 @@
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <h3>Real-Time Pricing</h3>
-                <p>Get up-to-date pricing information from all major hosting providers in one place.</p>
+                <p>Get up-to-date pricing information from all major hosting providers in one place with our advanced comparison technology.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-sliders-h"></i>
                 </div>
                 <h3>Custom Comparisons</h3>
-                <p>Filter and compare plans based on your specific requirements and budget.</p>
+                <p>Filter and compare plans based on your specific requirements and budget with our intelligent matching system.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-shield-alt"></i>
                 </div>
                 <h3>Unbiased Reviews</h3>
-                <p>Get honest, transparent comparisons without hidden biases or commissions.</p>
+                <p>Get honest, transparent comparisons without hidden biases or commissions. Your trust is our priority.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-bolt"></i>
                 </div>
                 <h3>Instant Results</h3>
-                <p>Compare hundreds of hosting plans in seconds and find the best deal.</p>
+                <p>Compare hundreds of hosting plans in seconds and find the best deal with our lightning-fast search engine.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-headset"></i>
                 </div>
                 <h3>Expert Support</h3>
-                <p>Get help from our hosting experts to make the right choice for your needs.</p>
+                <p>Get help from our hosting experts to make the right choice for your needs with 24/7 support available.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-dollar-sign"></i>
                 </div>
                 <h3>Save Money</h3>
-                <p>Find the best deals and save up to 70% on your hosting costs.</p>
+                <p>Find the best deals and save up to 70% on your hosting costs with our exclusive partner offers.</p>
             </div>
         </div>
     </div>
@@ -374,17 +462,17 @@
             <div class="step-card">
                 <div class="step-number">2</div>
                 <h3>Compare Prices</h3>
-                <p>Our system instantly compares prices from all major hosting providers.</p>
+                <p>Our system instantly compares prices from all major hosting providers in real-time.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">3</div>
                 <h3>View Recommendations</h3>
-                <p>Get personalized recommendations based on your needs and budget.</p>
+                <p>Get personalized recommendations based on your needs and budget with detailed insights.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">4</div>
                 <h3>Choose & Save</h3>
-                <p>Select the best plan and start saving on your hosting costs immediately.</p>
+                <p>Select the best plan and start saving on your hosting costs immediately with exclusive deals.</p>
             </div>
         </div>
     </div>
@@ -394,7 +482,7 @@
 <section class="providers">
     <div class="providers-container">
         <h2 class="section-title">Trusted Hosting Providers</h2>
-        <p style="color: var(--gray); font-size: 1.1rem; margin-bottom: 2rem;">We compare plans from the world's leading hosting companies</p>
+        <p style="color: var(--gray); font-size: 1.2rem; margin-bottom: 2rem;">We compare plans from the world's leading hosting companies</p>
         <div class="providers-grid">
             <div class="provider-logo">
                 <h3>Hostinger</h3>

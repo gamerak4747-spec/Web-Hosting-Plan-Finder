@@ -1,4 +1,4 @@
-x<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,16 +8,20 @@ x<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #7928CA;
-            --secondary: #FF0080;
-            --dark: #0F172A;
-            --light: #F8FAFC;
-            --gray: #64748B;
-            --success: #10B981;
-            --info: #06B6D4;
-            --warning: #F59E0B;
-            --danger: #EF4444;
+            --primary: #00D9FF;
+            --secondary: #0080FF;
+            --accent: #00FFFF;
+            --dark: #0A0E27;
+            --darker: #050814;
+            --light: #E0F7FF;
+            --gray: #8B9DC3;
+            --success: #00FFB7;
+            --info: #00D9FF;
+            --warning: #FFB800;
+            --danger: #FF0080;
             --border-radius: 12px;
+            --glow-blue: rgba(0, 217, 255, 0.4);
+            --glow-cyan: rgba(0, 255, 255, 0.3);
         }
 
         * {
@@ -28,22 +32,60 @@ x<!DOCTYPE html>
         }
 
         body {
-            background: linear-gradient(135deg, var(--dark), #1E293B);
+            background: var(--darker);
             color: var(--light);
             min-height: 100vh;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 128, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(0, 217, 255, 0.15) 0%, transparent 50%),
+                linear-gradient(180deg, var(--darker) 0%, var(--dark) 100%);
+            z-index: -2;
+        }
+
+        /* Tech Grid Pattern */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
         }
 
         /* Navigation */
         .navbar {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
             padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 128, 255, 0.1);
         }
 
         .navbar-container {
@@ -59,11 +101,25 @@ x<!DOCTYPE html>
             font-size: 1.8rem;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-decoration: none;
+            text-shadow: 0 0 30px var(--glow-blue);
+            position: relative;
+        }
+
+        .navbar-logo::before {
+            content: '⚡';
+            position: absolute;
+            left: -35px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
 
         .navbar-menu {
@@ -79,40 +135,50 @@ x<!DOCTYPE html>
             font-weight: 500;
             transition: all 0.3s ease;
             position: relative;
+            padding: 0.5rem 0;
         }
 
-        .navbar-link::after {
+        .navbar-link::before {
             content: '';
             position: absolute;
-            bottom: -5px;
-            left: 0;
+            bottom: 0;
+            left: 50%;
             width: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
         }
 
-        .navbar-link:hover::after {
+        .navbar-link:hover::before {
             width: 100%;
         }
 
+        .navbar-link:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--glow-blue);
+        }
+
         .navbar-link.active {
-            color: var(--secondary);
+            color: var(--primary);
         }
 
         .navbar-cta {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
             color: white;
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--glow-blue);
+            border: 1px solid var(--primary);
         }
 
         .navbar-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 128, 0.4);
+            box-shadow: 0 6px 25px var(--glow-cyan);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
         }
 
         .mobile-menu-toggle {
@@ -126,10 +192,21 @@ x<!DOCTYPE html>
 
         /* Footer */
         .footer {
-            background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 14, 39, 0.95);
+            border-top: 1px solid rgba(0, 217, 255, 0.2);
             padding: 3rem 0 1rem;
             margin-top: 5rem;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
 
         .footer-container {
@@ -148,7 +225,8 @@ x<!DOCTYPE html>
         .footer-section h3 {
             font-size: 1.2rem;
             margin-bottom: 1rem;
-            color: var(--secondary);
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--glow-blue);
         }
 
         .footer-section p {
@@ -167,11 +245,12 @@ x<!DOCTYPE html>
         .footer-links a {
             color: var(--gray);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .footer-links a:hover {
-            color: var(--secondary);
+            color: var(--primary);
+            padding-left: 5px;
         }
 
         .social-links {
@@ -183,25 +262,32 @@ x<!DOCTYPE html>
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 217, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--light);
             text-decoration: none;
             transition: all 0.3s ease;
+            border: 1px solid rgba(0, 217, 255, 0.3);
         }
 
         .social-link:hover {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--glow-blue);
         }
 
         .footer-bottom {
             text-align: center;
             padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(0, 217, 255, 0.1);
             color: var(--gray);
+        }
+
+        .footer-bottom a {
+            color: var(--primary);
+            text-decoration: none;
         }
 
         /* Flash Messages */
@@ -216,23 +302,29 @@ x<!DOCTYPE html>
             border-radius: var(--border-radius);
             margin-bottom: 1rem;
             animation: slideIn 0.3s ease;
+            border-left: 4px solid;
         }
 
         .alert-success {
-            background: rgba(16, 185, 129, 0.2);
-            border-left: 4px solid var(--success);
+            background: rgba(0, 255, 183, 0.1);
+            border-color: var(--success);
             color: var(--success);
         }
 
         .alert-error {
-            background: rgba(239, 68, 68, 0.2);
-            border-left: 4px solid var(--danger);
+            background: rgba(255, 0, 128, 0.1);
+            border-color: var(--danger);
             color: var(--danger);
         }
 
         @keyframes slideIn {
-            from { transform: translateY(-10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Glow Effects */
+        .glow-text {
+            text-shadow: 0 0 10px var(--glow-blue), 0 0 20px var(--glow-blue);
         }
 
         /* Responsive */
@@ -243,10 +335,12 @@ x<!DOCTYPE html>
                 left: -100%;
                 width: 100%;
                 height: calc(100vh - 70px);
-                background: rgba(15, 23, 42, 0.98);
+                background: rgba(10, 14, 39, 0.98);
+                backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 2rem;
                 transition: left 0.3s ease;
+                border-right: 1px solid rgba(0, 217, 255, 0.2);
             }
 
             .navbar-menu.active {
@@ -265,6 +359,23 @@ x<!DOCTYPE html>
                 grid-template-columns: 1fr;
             }
         }
+        .navbar-logo {
+    display: inline-block;
+    position: relative;
+}
+
+.logo-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 15px var(--glow-blue));
+    transition: all 0.3s ease;
+}
+
+.navbar-logo:hover .logo-image {
+    filter: drop-shadow(0 0 25px var(--glow-cyan));
+    transform: scale(1.1) rotate(5deg);
+}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -272,7 +383,10 @@ x<!DOCTYPE html>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-container">
-            <a href="{{ url_for('home') }}" class="navbar-logo">CB4UHost</a>
+            <a href="{{ url_for('home') }}" class="navbar-logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="CB4UHost Logo" class="logo-image">
+                <!-- <span class="logo-text">CB4UHost</span> -->
+            </a>
             <button class="mobile-menu-toggle" id="mobileMenuToggle">
                 <i class="fas fa-bars"></i>
             </button>
@@ -280,11 +394,9 @@ x<!DOCTYPE html>
                 <li><a href="{{ url_for('home') }}" class="navbar-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
                 <li><a href="{{ url_for('calculator') }}" class="navbar-link {% if request.endpoint == 'calculator' %}active{% endif %}">Compare Plans</a></li>
                 <li><a href="{{ url_for('about') }}" class="navbar-link {% if request.endpoint == 'about' %}active{% endif %}">About Us</a></li>
-
-<li><a href="{{ url_for('blog_list') }}" class="navbar-link {% if request.endpoint == 'blog_list' or request.endpoint == 'blog_detail' %}active{% endif %}">Blog</a></li>
-
-
+                <li><a href="{{ url_for('blog_list') }}" class="navbar-link {% if request.endpoint == 'blog_list' or request.endpoint == 'blog_detail' %}active{% endif %}">Blog</a></li>
                 <li><a href="{{ url_for('contact') }}" class="navbar-link {% if request.endpoint == 'contact' %}active{% endif %}">Contact</a></li>
+                {% block extra_menu_items %}{% endblock %}
                 <li><a href="{{ url_for('calculator') }}" class="navbar-cta">Get Started</a></li>
             </ul>
         </div>
